@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+  influxdb:
+    image: influxdb:2.0.7
+    restart: on-failure
+    environment:
+      - INFLUXD_REPORTING_DISABLED=true
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=user
+      - DOCKER_INFLUXDB_INIT_PASSWORD=VERYSECRET
+      - DOCKER_INFLUXDB_INIT_ORG=hilinkmon-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=hilink
+    ports:
+      - "8086:8086"
+    volumes:
+      - hilinkmon-influxdb-data:/var/lib/influxdb2
+
+  app:
+    build: .
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_ORG=hilinkmon-org
+      - INFLUXDB_BUCKET=hilink
+      # set token generated from the UI
+      - INFLUXDB_TOKEN
+      # set http URL
+      - HILINK_URL
+    command: >
+      dockerize -wait http://influxdb:8086 -timeout 60s
+      --
+      poetry run python3 -m app
+    depends_on:
+      - influxdb
+
+volumes:
+  # must be created externally
+  hilinkmon-influxdb-data:
+    external: true
