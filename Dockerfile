@@ -1,10 +1,9 @@
 FROM python:3.9-slim
 
 ENV \
-  DOCKERIZE_VERSION=v0.6.1 \
-  POETRY_VERSION=1.1.7 \
+  DOCKERIZE_VERSION=v0.19.0 \
+	POETRY_VERSION=1.8.3 \
   POETRY_HOME="/opt/poetry" \
-  POETRY_VIRTUALENVS_IN_PROJECT=true \
   PATH="$POETRY_HOME/bin:$PATH"
 
 RUN apt-get update \
@@ -12,9 +11,10 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -L https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz | tar -C /usr/local/bin -xvzf -
+RUN curl -fsSL --proto '=https' --tlsv1.3 https://github.com/powerman/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-x86_64 -o /usr/local/bin/dockerize \
+    && chmod a+rx /usr/local/bin/dockerize
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+RUN curl -fsSL --proto '=https' --tlsv1.3 https://install.python-poetry.org | python3 -
 
 ENV \
   PYTHONFAULTHANDLER=1 \
