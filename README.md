@@ -14,11 +14,15 @@ Create a docker volume for InfluxDB data:
 
     docker volume create hilinkmon-influxdb-data
 
-Build and run containers:
+Build containers:
 
     docker-compose build
 
-Now `influxdb` container should start with a preconfigured InfluxDB instance. 
+Run containers:
+
+    docker-compose up
+
+It is totally okay for `app` container to exit right now because it cannot access InfluxDB instance. We should reconfgiure it to use InfluxDB with a token. Right now `influxdb` container starts with a preconfigured InfluxDB instance. 
 Retrieve a default auth token from InfluxDB:
 
     docker-compose exec influxdb influx auth list --user user --hide-headers | cut -f 3
@@ -31,7 +35,10 @@ Assume the HiLink modem is available at 'http://192.168.8.1'.
 
 Rerun containers:
 
-    docker-compose restart app
+    docker-compose down
+    docker-compose up
+
+Now both containers should be up and running.
 
 ## Using the monitor
 
